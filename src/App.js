@@ -37,7 +37,9 @@ function App() {
 
   return (
     <div className='App'>
-      <header></header>
+      <header>
+        <SignOut />
+      </header>
       <section>
         {/* if user is defined, show ChatRoom. If not, show SignIn */}
         {user ? <ChatRoom /> : <SignIn />}
