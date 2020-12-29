@@ -14,7 +14,7 @@ import 'firebase/auth';
 //import hooks
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 
 // identify our project
 firebase.initializeApp({
@@ -69,6 +69,9 @@ function SignOut() {
 
 // ChatRoom component
 function ChatRoom() {
+  // reference the dummy div to scroll to
+  const dummy = useRef();
+
   // reference a firestore collection
   const messagesRef = firestore.collection('messages');
 
@@ -106,16 +109,22 @@ function ChatRoom() {
 
     // empty form input on submit
     setFormValue('');
+
+    // scroll to dummy div whenever user sends message
+    dummy.current.scrollIntoView({ behavior: 'smooth' });
   };
 
   return (
     <>
-      <div>
+      <main>
         {/* if there are messages... */}
         {/* loop over each document and pass into ChatMessage component as prop*/}
         {messages &&
           messages.map((msg) => <ChatMessage key={msg.id} message={msg} />)}
-      </div>
+
+        {/* scroll to this div when new message is rendered */}
+        <div ref={dummy}></div>
+      </main>
       {/* submit right to database */}
       <form onSubmit={sendMessage}>
         {/* when input changes, we change state value and bind to form input */}
