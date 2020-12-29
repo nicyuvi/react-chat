@@ -99,7 +99,7 @@ function ChatRoom() {
     await messagesRef.add({
       // values we want to write to database
       text: formValue,
-      createAt: firebase.firestore.FieldValue.serverTimestamp(),
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
       uid,
       photoURL,
     });
