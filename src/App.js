@@ -14,6 +14,7 @@ import 'firebase/auth';
 //import hooks
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
+import { useState } from 'react';
 
 // identify our project
 firebase.initializeApp({
@@ -77,6 +78,36 @@ function ChatRoom() {
   // make query and listen to any updates to the data in
   // real time with useCollectionData hook
   const [messages] = useCollectionData(query, { idField: 'id' });
+
+  // stateful values
+  const [formValue, setFormValue] = useState('');
+
+  // sendMessage event handler
+  // async funtion because it will take time for data
+  // to be written to the backend
+  const sendMessage = async (e) => {
+    // prevent page refresh
+    e.preventDefault();
+
+    const { uid, photoURL } = auth.currentUser;
+
+    // write new document to the database
+
+    // returns a Promise resolved with DocumentReference pointing
+    // to the newely created object AFTER it has been
+    // written to the backend
+    await messagesRef.add({
+      // values we want to write to database
+      text: formValue,
+      createAt: firebase.firestore.FieldValue.serverTimestamp(),
+      uid,
+      photoURL,
+    });
+
+    // empty form input on submit
+    setFormValue('');
+  };
+
   return (
     <>
       <div>
@@ -85,7 +116,16 @@ function ChatRoom() {
         {messages &&
           messages.map((msg) => <ChatMessage key={msg.id} message={msg} />)}
       </div>
-      <div></div>
+      {/* submit right to database */}
+      <form onSubmit={sendMessage}>
+        {/* when input changes, we change state value and bind to form input */}
+        <input
+          value={formValue}
+          onChange={(e) => setFormValue(e.target.value)}
+        />
+
+        <button type='submit'>Submit</button>
+      </form>
     </>
   );
 }
@@ -103,7 +143,7 @@ function ChatMessage(props) {
     // apply conditional CSS class to text message
     <div className={`message ${messageClass}`}>
       <img src={photoURL} alt='user' />
-      <p>{text}</p>;
+      <p>{text}</p>
     </div>
   );
 }
