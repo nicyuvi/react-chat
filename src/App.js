@@ -77,10 +77,10 @@ function ChatRoom() {
   // make query and listen to any updates to the data in
   // real time with useCollectionData hook
   const [messages] = useCollectionData(query, { idField: 'id' });
-
   return (
     <>
       <div>
+        {/* if there are messages... */}
         {/* loop over each document and pass into ChatMessage component as prop*/}
         {messages &&
           messages.map((msg) => <ChatMessage key={msg.id} message={msg} />)}
@@ -92,9 +92,20 @@ function ChatRoom() {
 
 function ChatMessage(props) {
   // destructure message document
-  const { text, uid } = props.message;
+  const { text, uid, photoURL } = props.message;
 
-  return <p>{text}</p>;
+  // conditional CSS based on if message was sent or recieved
+  // if message uid matches user uid then message is sent
+  // otherwise message is received
+  const messageClass = uid === auth.currentUser.id ? 'sent' : 'received';
+
+  return (
+    // apply conditional CSS class to text message
+    <div className={`message ${messageClass}`}>
+      <img src={photoURL} alt='user' />
+      <p>{text}</p>;
+    </div>
+  );
 }
 
 export default App;
